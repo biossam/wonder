@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>원더(Wonder) - 시선과 입장의 대화 & 찬반 토론실</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts Inter & Noto Sans KR -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Noto Sans KR', 'sans-serif'],
+                    },
+                    colors: {
+                        wonderSpace: '#0f172a',
+                        wonderBlue: '#2563eb',
+                        wonderWarm: '#f59e0b',
+                        wonderTeal: '#0d9488',
+                        wonderRose: '#e11d48',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Noto Sans KR', sans-serif; }
+        .tab-active {
+            border-bottom: 3px solid #2563eb;
+            color: #2563eb;
+            font-weight: 700;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- Navigation & Header -->
+    <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('characters')">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-500 to-amber-400 flex items-center justify-center text-white font-bold text-xl shadow-md">
+                        🚀
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-lg sm:text-xl tracking-tight leading-tight">WONDER : 입장의 시선</h1>
+                        <p class="text-xs text-slate-400 hidden sm:block">영화 《원더》 인물별 심층 분석 및 찬반 토론 플랫폼</p>
+                    </div>
+                </div>
+
+                <!-- Desktop Nav -->
+                <nav class="hidden md:flex space-x-1 sm:space-x-3 text-sm font-medium items-center">
+                    <button id="nav-characters" onclick="switchTab('characters')" class="px-3 py-2 rounded-lg hover:bg-slate-800 transition flex items-center gap-1.5 text-blue-400 font-semibold">
+                        <i data-lucide="users" class="w-4 h-4"></i> 인물별 입장 분석
+                    </button>
+                    <button id="nav-debates" onclick="switchTab('debates')" class="px-3 py-2 rounded-lg hover:bg-slate-800 transition flex items-center gap-1.5 text-slate-300">
+                        <i data-lucide="message-square-plus" class="w-4 h-4"></i> 쟁점 찬반 토론장
+                    </button>
+                    <button id="nav-quiz" onclick="switchTab('quiz')" class="px-3 py-2 rounded-lg hover:bg-slate-800 transition flex items-center gap-1.5 text-slate-300">
+                        <i data-lucide="compass" class="w-4 h-4"></i> 입장 공감 테스트
+                    </button>
+                    <button id="nav-precepts" onclick="switchTab('precepts')" class="px-3 py-2 rounded-lg hover:bg-slate-800 transition flex items-center gap-1.5 text-slate-300">
+                        <i data-lucide="quote" class="w-4 h-4"></i> 브라운 선생님의 격언
+                    </button>
+                    <!-- QR Code Quick Connect Button -->
+                    <button onclick="openQrModal()" class="ml-2 px-3 py-1.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold rounded-lg text-xs shadow transition flex items-center gap-1">
+                        <i data-lucide="qr-code" class="w-4 h-4"></i> 📱 QR 학생 접속
+                    </button>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Bar -->
+        <div class="md:hidden border-t border-slate-800 bg-slate-900/95 backdrop-blur px-2 py-2 flex justify-around text-xs font-medium">
+            <button id="mnav-characters" onclick="switchTab('characters')" class="flex flex-col items-center py-1 px-2 text-blue-400 font-bold">
+                <i data-lucide="users" class="w-4 h-4 mb-0.5"></i> 인물 입장
+            </button>
+            <button id="mnav-debates" onclick="switchTab('debates')" class="flex flex-col items-center py-1 px-2 text-slate-400">
+                <i data-lucide="message-square-plus" class="w-4 h-4 mb-0.5"></i> 찬반 토론
+            </button>
+            <button id="mnav-quiz" onclick="switchTab('quiz')" class="flex flex-col items-center py-1 px-2 text-slate-400">
+                <i data-lucide="compass" class="w-4 h-4 mb-0.5"></i> 공감 테스트
+            </button>
+            <button id="mnav-precepts" onclick="switchTab('precepts')" class="flex flex-col items-center py-1 px-2 text-slate-400">
+                <i data-lucide="quote" class="w-4 h-4 mb-0.5"></i> 명언 격언
+            </button>
+            <button onclick="openQrModal()" class="flex flex-col items-center py-1 px-2 text-amber-400 font-bold">
+                <i data-lucide="qr-code" class="w-4 h-4 mb-0.5"></i> QR 접속
+            </button>
+        </div>
+    </header>
+
+    <!-- Hero Banner -->
+    <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white py-8 px-4 border-b border-indigo-900/50">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <div>
+                <span class="inline-block bg-blue-500/20 text-blue-300 text-xs px-3 py-1 rounded-full font-semibold border border-blue-500/30 mb-2">
+                    "When given the choice between being right or being kind, choose kind."
+                </span>
+                <h2 id="hero-title" class="text-2xl sm:text-3xl font-bold tracking-tight">등장인물 각자의 시선과 입장을 들여다봅니다</h2>
+                <p id="hero-desc" class="text-slate-300 text-sm sm:text-base mt-2 max-w-2xl leading-relaxed">
+                    영화 《원더》 속 인물들은 각자의 상처, 사랑, 두려움, 현실적 계산 속에서 선택을 내립니다. 누군가의 행동을 옳고 그름으로만 판단하기 전에 그들의 주장과 근거, 이유를 살펴보고 함께 토론해 보세요.
+                </p>
+            </div>
+            <div class="hidden lg:flex items-center space-x-3 bg-white/5 p-4 rounded-xl backdrop-blur border border-white/10">
+                <div class="text-center px-3 border-r border-slate-700">
+                    <div class="text-2xl font-black text-amber-400">8명</div>
+                    <div class="text-xs text-slate-400">분석 인물</div>
+                </div>
+                <div class="text-center px-3 border-r border-slate-700">
+                    <div class="text-2xl font-black text-blue-400">5개</div>
+                    <div class="text-xs text-slate-400">토론 쟁점</div>
+                </div>
+                <div class="text-center px-3">
+                    <div class="text-2xl font-black text-teal-400" id="stat-posts">12개</div>
+                    <div class="text-xs text-slate-400">학급 의견</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
+
+        <!-- TAB 1: Character Perspectives Grid -->
+        <section id="tab-characters" class="space-y-6">
+            <!-- Filter & Search Controls -->
+            <div class="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-4 bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+                <div class="flex flex-wrap gap-2" id="char-filter-buttons">
+                    <button onclick="filterCharacters('all')" class="char-filter-btn px-4 py-2 rounded-lg text-sm font-semibold bg-blue-600 text-white shadow-sm transition">전체 보기</button>
+                    <button onclick="filterCharacters('family')" class="char-filter-btn px-4 py-2 rounded-lg text-sm font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 transition">풀먼가 (가족)</button>
+                    <button onclick="filterCharacters('friends')" class="char-filter-btn px-4 py-2 rounded-lg text-sm font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 transition">학교 친구들</button>
+                    <button onclick="filterCharacters('adults')" class="char-filter-btn px-4 py-2 rounded-lg text-sm font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 transition">선생님 & 교장</button>
+                </div>
+                <div class="relative min-w-[240px]">
+                    <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
+                    <input type="text" id="char-search" onkeyup="searchCharacters()" placeholder="인물 이름 또는 명대사 검색..." class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+            </div>
+
+            <!-- Character Cards Grid Container -->
+            <div id="characters-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+                <!-- Dynamically populated via JavaScript -->
+            </div>
+        </section>
+
+        <!-- TAB 2: Debate Arena -->
+        <section id="tab-debates" class="hidden space-y-6">
+            <!-- Topic Selection Bar -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 sm:p-6">
+                <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 mb-2">
+                    <label for="debate-topic-select" class="block text-xs font-bold text-slate-500 uppercase tracking-wider">토론 쟁점 선택하기</label>
+                    <button onclick="openTeacherVoteModal()" class="text-xs bg-slate-800 hover:bg-slate-900 text-amber-400 border border-amber-400/30 px-3 py-1.5 rounded-lg font-bold transition flex items-center gap-1.5 self-start sm:self-auto">
+                        <i data-lucide="sliders" class="w-3.5 h-3.5"></i> ⚙️ 학급 실제 투표수 직접 입력 (선생님용)
+                    </button>
+                </div>
+                <select id="debate-topic-select" onchange="changeDebateTopic()" class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-base font-bold rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    <!-- Populated by JS -->
+                </select>
+
+                <!-- Active Topic Overview Card -->
+                <div id="active-topic-card" class="mt-6 bg-gradient-to-br from-slate-900 to-indigo-950 text-white rounded-xl p-5 sm:p-6 shadow-md border border-indigo-800/50">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- Debate Split View: Form & Post List -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Left: Opinion Submission Box (5 cols) -->
+                <div class="lg:col-span-5 bg-white p-6 rounded-xl shadow-sm border border-slate-200 h-fit">
+                    <h3 class="text-lg font-bold text-slate-900 mb-1 flex items-center gap-2">
+                        <i data-lucide="pen-tool" class="w-5 h-5 text-blue-600"></i> 내 의견 및 논거 등록
+                    </h3>
+                    <p class="text-xs text-slate-500 mb-4">자신의 찬반 입장과 함께 명확한 주장, 근거, 이유를 제시해 보세요.</p>
+
+                    <form id="debate-form" onsubmit="handleDebateSubmit(event)" class="space-y-4">
+                        <!-- Side selection -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">토론 입장 선택 *</label>
+                            <div class="grid grid-cols-2 gap-3">
+                                <label class="flex items-center justify-center gap-2 p-3 rounded-lg border border-emerald-200 bg-emerald-50 text-emerald-800 cursor-pointer font-bold hover:bg-emerald-100 transition">
+                                    <input type="radio" name="debate-side" value="pro" checked class="text-emerald-600 focus:ring-emerald-500">
+                                    <span>👍 찬성 (동의)</span>
+                                </label>
+                                <label class="flex items-center justify-center gap-2 p-3 rounded-lg border border-rose-200 bg-rose-50 text-rose-800 cursor-pointer font-bold hover:bg-rose-100 transition">
+                                    <input type="radio" name="debate-side" value="con" class="text-rose-600 focus:ring-rose-500">
+                                    <span>👎 반대 (비동의)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Supporting Character View Alignment -->
+                        <div>
+                            <label for="debate-author-role" class="block text-xs font-bold text-slate-700 mb-1">어떤 인물의 입장을 지지/참고하나요?</label>
+                            <select id="debate-author-role" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500">
+                                <option value="일반 시청자">일반 관객/시청자 관점</option>
+                                <option value="어기(Auggie)의 시선">어기 (Auggie)의 시선</option>
+                                <option value="이사벨(엄마)의 시선">이사벨 (엄마)의 시선</option>
+                                <option value="네이트(아빠)의 시선">네이트 (아빠)의 시선</option>
+                                <option value="비아(누나)의 시선">비아 (누나)의 시선</option>
+                                <option value="잭 윌의 시선">잭 윌 (Jack Will)의 시선</option>
+                                <option value="줄리안 부모 관점">줄리안 측 관점</option>
+                                <option value="투쉬만 교장 관점">교육자/교장 선생님 관점</option>
+                            </select>
+                        </div>
+
+                        <!-- User Name -->
+                        <div>
+                            <label for="debate-author-name" class="block text-xs font-bold text-slate-700 mb-1">작성자 닉네임</label>
+                            <input type="text" id="debate-author-name" placeholder="예: 영화덕후, 친절한거북이" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <!-- Claim -->
+                        <div>
+                            <label for="debate-claim" class="block text-xs font-bold text-slate-700 mb-1">핵심 주장 (한 줄 요약)</label>
+                            <input type="text" id="debate-claim" placeholder="예: 아이의 자립을 위해 상처를 감수하더라도 세상 밖으로 나가야 한다." required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <!-- Evidence & Reasons -->
+                        <div>
+                            <label for="debate-reason" class="block text-xs font-bold text-slate-700 mb-1">구체적 근거 및 이유</label>
+                            <textarea id="debate-reason" rows="4" placeholder="영화 속 사건(예: 27번의 수술 후 사회성 형성 필요성, 잭 윌과의 진정한 친구 관계 형성 등)을 근거로 이유를 작성해 주세요." required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
+                        </div>
+
+                        <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition shadow-md flex items-center justify-center gap-2">
+                            <i data-lucide="send" class="w-4 h-4"></i> 토론 의견 등록하기
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Right: Opinion Feed (7 cols) -->
+                <div class="lg:col-span-7 space-y-4">
+                    <!-- Feed Filter Bar -->
+                    <div class="bg-white p-3 rounded-xl shadow-sm border border-slate-200 flex justify-between items-center text-sm">
+                        <span class="font-bold text-slate-700 flex items-center gap-1.5">
+                            <i data-lucide="message-square" class="w-4 h-4 text-slate-500"></i>
+                            등록된 의견 (<span id="feed-count">0</span>개)
+                        </span>
+                        <div class="flex gap-1 text-xs">
+                            <button onclick="filterDebateFeed('all')" id="ffilter-all" class="px-3 py-1.5 rounded-md font-bold bg-slate-800 text-white">전체</button>
+                            <button onclick="filterDebateFeed('pro')" id="ffilter-pro" class="px-3 py-1.5 rounded-md text-emerald-700 bg-emerald-50 hover:bg-emerald-100 font-semibold">👍 찬성</button>
+                            <button onclick="filterDebateFeed('con')" id="ffilter-con" class="px-3 py-1.5 rounded-md text-rose-700 bg-rose-50 hover:bg-rose-100 font-semibold">👎 반대</button>
+                        </div>
+                    </div>
+
+                    <!-- Feed List Container -->
+                    <div id="debate-posts-list" class="space-y-4">
+                        <!-- Dynamic Posts Inserted Here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: Perspective Simulator & Quiz -->
+        <section id="tab-quiz" class="hidden space-y-6">
+            <div class="max-w-3xl mx-auto bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                <!-- Quiz Header Banner -->
+                <div class="bg-gradient-to-r from-blue-600 to-indigo-700 p-6 sm:p-8 text-white text-center">
+                    <span class="bg-white/20 text-white text-xs px-3 py-1 rounded-full font-semibold uppercase tracking-wider">Interactive Test</span>
+                    <h3 class="text-2xl sm:text-3xl font-extrabold mt-2">"내가 영화 《원더》 속 상황이라면?"</h3>
+                    <p class="text-blue-100 text-sm mt-2">5가지 결정적 딜레마 상황에서 당신의 선택을 통해 공감대를 지닌 인물을 찾아보세요.</p>
+                </div>
+
+                <!-- Quiz Interactive Container -->
+                <div id="quiz-container" class="p-6 sm:p-8">
+                    <!-- Intro View -->
+                    <div id="quiz-intro" class="text-center py-6 space-y-4">
+                        <div class="w-20 h-20 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto text-3xl font-bold">
+                            🎭
+                        </div>
+                        <h4 class="text-xl font-bold text-slate-800">나와 가장 닮은 인물 태도 찾기</h4>
+                        <p class="text-slate-600 text-sm max-w-md mx-auto leading-relaxed">
+                            보호와 도전, 집단 적응과 진실성, 가족에 대한 책임 등 영화 속 등장인물들이 직면했던 선택의 순간을 직접 체험합니다.
+                        </p>
+                        <button onclick="startQuiz()" class="mt-4 px-8 py-3 bg-blue-600 text-white font-bold rounded-xl shadow-lg hover:bg-blue-700 transition transform active:scale-95 inline-flex items-center gap-2">
+                            <i data-lucide="play" class="w-5 h-5"></i> 테스트 시작하기
+                        </button>
+                    </div>
+
+                    <!-- Question View (Hidden initially) -->
+                    <div id="quiz-question-box" class="hidden space-y-6">
+                        <div class="flex justify-between items-center text-xs text-slate-400 font-bold border-b border-slate-100 pb-3">
+                            <span>질문 <span id="quiz-step-num" class="text-blue-600 font-black">1</span> / 5</span>
+                            <span id="quiz-category-tag" class="bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full">갈등 상황</span>
+                        </div>
+
+                        <div>
+                            <h4 id="quiz-question-text" class="text-lg font-bold text-slate-900 leading-snug">
+                                질문 텍스트
+                            </h4>
+                        </div>
+
+                        <div id="quiz-options-list" class="space-y-3">
+                            <!-- Options rendered by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Result View (Hidden initially) -->
+                    <div id="quiz-result-box" class="hidden space-y-6 text-center py-4">
+                        <div class="inline-block p-4 rounded-full bg-gradient-to-tr from-amber-400 to-amber-200 text-4xl shadow-inner mb-2" id="quiz-result-emoji">
+                            🌟
+                        </div>
+                        <span class="block text-xs font-bold text-blue-600 tracking-widest uppercase">YOUR PERSPECTIVE MATCH</span>
+                        <h3 id="quiz-result-name" class="text-2xl font-black text-slate-900">당신과 닮은 인물</h3>
+                        
+                        <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 text-left space-y-3 max-w-xl mx-auto">
+                            <h5 class="font-bold text-slate-800 text-sm flex items-center gap-1.5">
+                                <i data-lucide="sparkles" class="w-4 h-4 text-amber-500"></i> 이 인물의 관점과 태도
+                            </h5>
+                            <p id="quiz-result-desc" class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                                설명
+                            </p>
+                        </div>
+
+                        <button onclick="startQuiz()" class="px-6 py-2.5 bg-slate-800 text-white text-sm font-bold rounded-lg hover:bg-slate-900 transition">
+                            🔄 다시 테스트하기
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: Mr. Browne's Precepts & Student Memo Wall -->
+        <section id="tab-precepts" class="hidden space-y-8">
+            <!-- Mr. Browne's Precept Banner -->
+            <div class="bg-gradient-to-r from-amber-500 via-amber-600 to-orange-600 text-slate-950 rounded-2xl p-6 sm:p-8 shadow-md">
+                <div class="flex items-start gap-4">
+                    <div class="text-4xl hidden sm:block">📜</div>
+                    <div class="space-y-2">
+                        <span class="bg-slate-950/20 text-slate-950 text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider">MR. BROWNE'S PRECEPTS</span>
+                        <h3 class="text-2xl font-black">브라운 선생님의 월별 격언 (Precepts)</h3>
+                        <p class="text-slate-900 text-sm leading-relaxed">
+                            "격언이란 무엇일까? 격언은 자신에 대해 중요한 것을 결정할 때 길잡이가 되어주는 규범이란다." — 브라운 선생님
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Precept Cards Grid -->
+            <div id="precepts-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Populated via JS -->
+            </div>
+
+            <!-- Class Memo Wall Section -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 space-y-6">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-100 pb-4">
+                    <div>
+                        <h4 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                            <i data-lucide="heart" class="w-5 h-5 text-rose-500"></i> 우리들의 친절 다짐 & 나만의 격언 게시판
+                        </h4>
+                        <p class="text-xs text-slate-500 mt-1">영화 《원더》를 감상한 후 가슴에 새긴 여러분의 다짐과 한 줄 메시지를 공유해 주세요.</p>
+                    </div>
+                    <button onclick="openMemoModal()" class="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-lg text-xs shadow transition flex items-center gap-1.5 shrink-0">
+                        <i data-lucide="plus-circle" class="w-4 h-4"></i> 나만의 격언/소감 쓰기
+                    </button>
+                </div>
+
+                <!-- Sticky Notes Grid Container -->
+                <div id="memos-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Populated via JS -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- QR Code Connection Modal -->
+    <div id="qr-modal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 text-center space-y-5 transform transition-all">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <h4 class="font-bold text-slate-900 text-lg flex items-center gap-2">
+                    <i data-lucide="qr-code" class="w-5 h-5 text-amber-500"></i> 학급 학생 직접 접속용 QR코드
+                </h4>
+                <button onclick="closeQrModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            
+            <p class="text-xs text-slate-600 leading-relaxed">
+                학생들이 아래 QR코드를 스마트폰이나 패드 카메라로 스캔하면 바로 이 토론실에 접속하여 직접 투표 및 의견을 등록할 수 있습니다.
+            </p>
+
+            <!-- QR Code Display Area -->
+            <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200 inline-block mx-auto shadow-inner">
+                <img id="qr-image" src="" alt="접속 QR코드" onerror="handleQrError(this)" class="w-48 h-48 mx-auto rounded-lg shadow-sm">
+            </div>
+
+            <!-- Notice on URL -->
+            <div class="bg-amber-50 border border-amber-200 rounded-lg p-3 text-left text-xs text-amber-900 leading-relaxed space-y-1">
+                <p class="font-bold flex items-center gap-1"><i data-lucide="info" class="w-3.5 h-3.5 text-amber-600"></i> QR 접속 주소 직접 수정 가능</p>
+                <p class="text-[11px] text-amber-800">미리보기(Iframe) 환경에서는 가상 주소가 기본 표시됩니다. 학급에서 사용 시 <b>실제 배포된 웹사이트 주소(예: Netlify, Vercel, 학교 웹 주소)</b>를 아래에 입력하면 QR코드가 즉시 해당 주소로 변경됩니다.</p>
+            </div>
+
+            <!-- URL Input & Copy Box -->
+            <div class="space-y-2 text-left">
+                <label for="classroom-url-input" class="block text-xs font-bold text-slate-700">토론실 접속 주소 (입력 시 QR 실시간 업데이트)</label>
+                <div class="flex gap-2">
+                    <input type="text" id="classroom-url-input" oninput="updateQrCode()" placeholder="https://your-actual-site.com" class="flex-1 bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-mono text-slate-800 focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                    <button onclick="copyClassroomUrl()" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg text-xs transition shrink-0 flex items-center gap-1">
+                        <i data-lucide="copy" class="w-3.5 h-3.5"></i> 주소 복사
+                    </button>
+                </div>
+            </div>
+
+            <button onclick="closeQrModal()" class="w-full py-2.5 bg-slate-800 text-white font-bold rounded-xl hover:bg-slate-900 transition text-sm">
+                닫기
+            </button>
+        </div>
+    </div>
+
+    <!-- Teacher Direct Vote Input Modal -->
+    <div id="teacher-vote-modal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-4 transform transition-all">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <h4 class="font-bold text-slate-900 text-lg flex items-center gap-2">
+                    <i data-lucide="sliders" class="w-5 h-5 text-blue-600"></i> 실제 학급 투표 수 직접 설정
+                </h4>
+                <button onclick="closeTeacherVoteModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+
+            <div class="bg-amber-50 border border-amber-200 p-3 rounded-lg text-xs text-amber-900 leading-relaxed">
+                💡 거수/수기 투표 결과나 학급 실제 학생 수를 직접 입력하면 현장 투표 수치와 비율이 즉시 업데이트됩니다.
+            </div>
+
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">현재 선택된 토론 쟁점</label>
+                    <input type="text" id="teacher-modal-topic-title" disabled class="w-full bg-slate-100 border border-slate-200 text-slate-700 font-bold rounded-lg p-2.5 text-xs">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label for="teacher-pro-votes" class="block text-xs font-bold text-emerald-700 mb-1">👍 찬성 학생 수 (명)</label>
+                        <input type="number" id="teacher-pro-votes" min="0" required class="w-full bg-slate-50 border border-emerald-300 font-bold text-slate-900 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500">
+                    </div>
+                    <div>
+                        <label for="teacher-con-votes" class="block text-xs font-bold text-rose-700 mb-1">👎 반대 학생 수 (명)</label>
+                        <input type="number" id="teacher-con-votes" min="0" required class="w-full bg-slate-50 border border-rose-300 font-bold text-slate-900 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-rose-500">
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-2 flex justify-end gap-2">
+                <button type="button" onclick="closeTeacherVoteModal()" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-lg text-sm font-semibold hover:bg-slate-200">취소</button>
+                <button type="button" onclick="saveTeacherVotes()" class="px-5 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700 transition flex items-center gap-1">
+                    <i data-lucide="check" class="w-4 h-4"></i> 학급 투표 반영하기
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Memo Modal -->
+    <div id="memo-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-4 transform transition-all">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <h4 class="font-bold text-slate-900 text-lg">나만의 격언 / 소감 등록</h4>
+                <button onclick="closeMemoModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <form onsubmit="handleMemoSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">작성자 이름 / 닉네임</label>
+                    <input type="text" id="memo-author" required placeholder="예: 5학년 학생, 작은별" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-amber-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">나만의 격언 또는 영화 한 줄 소감</label>
+                    <textarea id="memo-text" required rows="3" placeholder="예: 타인을 바꿀 수는 없다. 하지만 타인을 대하는 나의 따뜻함은 세상을 바꿀 수 있다." class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-amber-500 resize-none"></textarea>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">메모 테마 색상</label>
+                    <div class="flex gap-3">
+                        <label class="flex-1 p-2 rounded-lg bg-amber-100 text-amber-900 text-xs font-bold text-center cursor-pointer border border-amber-300">
+                            <input type="radio" name="memo-color" value="amber" checked class="hidden"> 따뜻한 옐로우
+                        </label>
+                        <label class="flex-1 p-2 rounded-lg bg-blue-100 text-blue-900 text-xs font-bold text-center cursor-pointer border border-blue-300">
+                            <input type="radio" name="memo-color" value="blue" class="hidden"> 희망의 블루
+                        </label>
+                        <label class="flex-1 p-2 rounded-lg bg-emerald-100 text-emerald-900 text-xs font-bold text-center cursor-pointer border border-emerald-300">
+                            <input type="radio" name="memo-color" value="emerald" class="hidden"> 친절의 그린
+                        </label>
+                    </div>
+                </div>
+                <div class="pt-2 flex justify-end gap-2">
+                    <button type="button" onclick="closeMemoModal()" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-lg text-sm font-semibold hover:bg-slate-200">취소</button>
+                    <button type="submit" class="px-5 py-2 bg-amber-500 text-slate-950 rounded-lg text-sm font-bold hover:bg-amber-400 transition">등록하기</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 py-6 border-t border-slate-800 mt-12 text-xs">
+        <div class="max-w-7xl mx-auto px-4 text-center space-y-2">
+            <p class="font-medium text-slate-300">영화 《원더 (Wonder, 2017)》 인물 입장 분석 및 교육용 토론 웹앱</p>
+            <p class="text-slate-500">"옳음과 친절함 중 하나를 선택해야 한다면, 친절함을 선택하라." — R.J. 팔라시오 《원더》 원작 중</p>
+        </div>
+    </footer>
+
+    <script>
+        // Character Database
+        const charactersData = [
+            {
+                id: 'auggie',
+                name: '어기 (August Pullman)',
+                role: '주인공 / 5학년 신입생',
+                category: 'family',
+                avatar: '🚀',
+                badgeBg: 'bg-blue-100 text-blue-800',
+                claim: '나도 남들과 똑같은 보통 아이일 뿐이다. 우주선 헬멧 없이 세상에 나갈 준비를 하고 싶다.',
+                evidence: '27번의 수술을 버텨냈으며, 과학 분야에 뛰어난 재능이 있고 잭 윌이라는 진정한 친구를 사귐.',
+                reason: '사람들의 시선과 낯선 반응이 무섭고 두렵지만, 평생 집안(홈스쿨링)에 갇혀 살 수는 없으며 친구들과 함께 진짜 사회를 경험하고 싶기 때문.',
+                quote: '“내가 보통 아이가 아닌 이유는, 아무도 나를 보통 아이로 보지 않기 때문이에요.”'
+            },
+            {
+                id: 'isabel',
+                name: '이사벨 (Isabel Pullman)',
+                role: '어기의 엄마',
+                category: 'family',
+                avatar: '👩‍🎨',
+                badgeBg: 'bg-amber-100 text-amber-800',
+                claim: '어기를 세상의 편견과 상처로부터 보호하는 것도 중요하지만, 더 늦기 전에 학교라는 진짜 사회로 떠나보내야 한다.',
+                evidence: '어기가 매우 똑똑하고 사회적 잠재력이 크며, 중학교 진학 시기가 사회성 형성의 골든타임이라는 판단.',
+                reason: '언제까지나 부모가 어기 곁을 지켜줄 수 없다. 세상은 두렵지만 아이 스스로 돋움판을 딛고 일어서도록 돕는 것이 진정한 모성애라고 믿음.',
+                quote: '“너의 얼굴은 너의 지도로구나. 네가 어디로 가고 있는지를 보여주거든. 결코 못나지 않았단다.”'
+            },
+            {
+                id: 'nate',
+                name: '네이트 (Nate Pullman)',
+                role: '어기의 아빠',
+                category: 'family',
+                avatar: '🐶',
+                badgeBg: 'bg-orange-100 text-orange-800',
+                claim: '어기를 잔인하고 험난한 학교라는 환경으로 너무 일찍 내모는 것은 위험하다.',
+                evidence: '아이들이 어기의 외모를 보고 보일 차가운 반응과 사자 굴에 들어가는 듯한 상처의 위험성.',
+                reason: '아이가 상처받는 것을 보는 것이 아빠로서 너무 괴롭고, 준비가 될 때까지 조금 더 가정보호 아래 두는 것이 맞다고 생각함.',
+                quote: '“학교는 사자 굴 같단 말이야. 사람들이 어기를 괴롭히면 난 그 꼴을 참지 못할 거야.”'
+            },
+            {
+                id: 'via',
+                name: '비아 (Via Pullman)',
+                role: '어기의 누나',
+                category: 'family',
+                avatar: '⭐',
+                badgeBg: 'bg-purple-100 text-purple-800',
+                claim: '어기를 사랑하지만, 나 역시 부모님의 온전한 사랑과 관심이 필요한 평범한 딸이자 고등학생이다.',
+                evidence: '가족의 모든 일정과 관심이 어기 중심으로만 돌아가면서, 할머니와의 이별 및 친구 미란다와의 갈등을 혼자 견뎌냄.',
+                reason: '어기의 외모와 상황을 이해하면서도, 자신의 쓸쓸함과 외로움을 표현하면 부모님께 죄책감을 주는 것 같아 참아야만 했던 복잡한 심정.',
+                quote: '“어기는 태양이고, 엄마와 아빠와 나는 태양을 도는 행성들이야.”'
+            },
+            {
+                id: 'jackwill',
+                name: '잭 윌 (Jack Will)',
+                role: '어기의 첫 번째 친구',
+                category: 'friends',
+                avatar: '👦',
+                badgeBg: 'bg-emerald-100 text-emerald-800',
+                claim: '처음엔 교장 선생님 부탁으로 어기를 도와줬지만, 이제 어기는 내 진정한 최고의 친구다.',
+                evidence: '핼러윈 날 분위기 맞추려다 막말을 하여 어기에게 상처를 줬지만, 진심으로 뉘우치고 줄리안과 싸우면서까지 어기를 지킴.',
+                reason: '어기는 유머 감각이 뛰어나고 함께 있으면 정말 재미있는 친구이기 때문에 외모와 상관없이 진심을 다하게 됨.',
+                quote: '“어기, 내가 말도 안 되는 말을 한 거 정말 미안해. 넌 내 가장 친한 친구야.”'
+            },
+            {
+                id: 'julian',
+                name: '줄리안 (Julian Alba)',
+                role: '동급생 (가해 학생) & 부모',
+                category: 'friends',
+                avatar: '😒',
+                badgeBg: 'bg-rose-100 text-rose-800',
+                claim: '어기 때문에 학교 분위기가 이상해지고 내 입지가 불안해진다. (줄리안 부모: 학교의 징계는 과도하다)',
+                evidence: '어기의 얼굴을 다스베이더에 비유하며 은근한 따돌림을 주도함. 줄리안 부모는 기부금을 빌미로 교장에게 항의.',
+                reason: '자신과 다른 외모에 대한 거부감, 무의식적 악의, 그리고 오냐오냐 키운 부모의 그릇된 두둔이 아이의 진정한 반성을 막음.',
+                quote: '“그냥 고스트페이스 가면인 줄 알았지. 걔 얼굴이 너무 괴물 같잖아.”'
+            },
+            {
+                id: 'tushman',
+                name: '투쉬만 교장 (Mr. Tushman)',
+                role: '비쳐 학원 교장 선생님',
+                category: 'adults',
+                avatar: '🎓',
+                badgeBg: 'bg-teal-100 text-teal-800',
+                claim: '학교는 다양성을 포용하고, 모든 아이가 공평하게 배울 권리를 보장하는 장소여야 한다.',
+                evidence: '줄리안 부모의 재정적 압박에도 굴하지 않고 줄리안의 출석정지 징계를 유지함.',
+                reason: '어기는 외모를 바꿀 수 없다. 그렇다면 우리가 시선을 바꿔야 한다. 교육자로서 학생들에게 옳은 가치를 가르쳐야 함.',
+                quote: '“어기는 외모를 바꿀 수 없습니다. 우리의 시선을 바꿔야 하지 않겠습니까?”'
+            },
+            {
+                id: 'browne',
+                name: '브라운 선생님 (Mr. Browne)',
+                role: '영어/담임 교사',
+                category: 'adults',
+                avatar: '📖',
+                badgeBg: 'bg-indigo-100 text-indigo-800',
+                claim: '지식보다 중요한 것은 타인을 대하는 "친절함(Kindness)"이다.',
+                evidence: '매달 인성 격언(Precept)을 제시하여 학생들이 자신과 타인을 이해하는 성찰의 기회를 마련함.',
+                reason: '옳은 것과 친절한 것 사이에서 선택해야 할 때, 친절을 선택하는 것이 공동체를 아름답게 만든다고 믿음.',
+                quote: '“옳음과 친절함 중 하나를 선택해야 한다면, 친절함을 선택하라.”'
+            }
+        ];
+
+        // Debate Topics Database
+        const debateTopics = [
+            {
+                id: 1,
+                title: '홈스쿨링 vs 일반 학교 진학 (엄마 이사벨의 결정)',
+                question: '상처받을 위험을 무릅쓰고 어기를 일반 학교에 진학시킨 엄마의 결정은 타당했는가?',
+                proDesc: '아이가 사회 구성원으로 자립하려면 일찍이 세상의 시선과 시련을 경험해야 한다.',
+                conDesc: '27번 수술을 받은 아이에게 편견과 따돌림이라는 혹독한 상처를 주게 될 위험이 너무 크다.',
+                proVotes: 18,
+                conVotes: 6
+            },
+            {
+                id: 2,
+                title: '잭 윌의 핼러윈 사건과 친구 관계의 회복',
+                question: '잭 윌이 다른 친구들 앞에서 어기의 뒷담화를 한 실수는 용서받을 수 있는가?',
+                proDesc: '집단 압박에 못 이긴 행동이었지만 진심으로 뉘우치고 위험을 무릅쓰며 어기를 지켰다.',
+                conDesc: '가장 믿었던 친구에게 받은 외모 비하 상처는 신뢰를 완전히 무너뜨리는 치명적 배신이다.',
+                proVotes: 15,
+                conVotes: 9
+            },
+            {
+                id: 3,
+                title: '줄리안에 대한 학교의 정학 징계 처분',
+                question: '줄리안에게 정학 징계를 내리고 사과를 요구한 투쉬만 교장선생님의 조치는 적절했는가?',
+                proDesc: '괴롭힘과 혐오 표현에 대해 명확한 경고와 책임을 묻는 것은 선량한 다수를 지키기 위해 필수적이다.',
+                conDesc: '징계와 처벌보다는 줄리안과 그의 부모를 대화로 설득하고 교화하는 기회를 주었어야 한다.',
+                proVotes: 21,
+                conVotes: 3
+            },
+            {
+                id: 4,
+                title: '가족 내 관심 집중과 누나 비아의 희생',
+                question: '어기에게 온 관심이 쏠려 누나 비아가 외로움을 참도록 한 가족 상황은 어쩔 수 없는 일인가?',
+                proDesc: '생명이 위태로운 동생이 우선될 수밖에 없으며 비아도 동생을 사랑하기에 견뎌내야 하는 현실이다.',
+                conDesc: '비아 역시 돌봄이 필요한 자녀이므로 부모가 의도적으로 비아만을 위한 시간과 사랑을 주었어야 한다.',
+                proVotes: 12,
+                conVotes: 12
+            },
+            {
+                id: 5,
+                title: '타인의 시선에 대한 우주선 헬멧 벗기',
+                question: '어기가 우주선 헬멧을 벗고 세상에 얼굴을 드러내도록 유도한 가족의 방식은 옳았는가?',
+                proDesc: '가면으로 숨는 것은 임시방편일 뿐, 자신의 본모습을 당당하게 마주해야 참된 성장이 일어난다.',
+                conDesc: '아이가 마음의 준비가 될 때까지 헬멧이라는 최소한의 심리적 방어막을 존중해 주었어야 한다.',
+                proVotes: 19,
+                conVotes: 5
+            }
+        ];
+
+        // Seed Debate Posts
+        let debatePosts = [
+            {
+                id: 101,
+                topicId: 1,
+                side: 'pro',
+                role: '이사벨(엄마)의 시선',
+                author: '햇살선생님',
+                claim: '상처를 딛고 나아갈 때 아이는 진짜 어른이 됩니다.',
+                reason: '엄마 이사벨이 끝까지 보호막 안에만 두었다면 어기는 훌륭한 과학 인재이자 우정을 아는 아이로 성장하지 못했을 것입니다. 학교에서의 시련이 곧 예방주사가 되었습니다.',
+                likes: 8,
+                date: '2026.09.21'
+            },
+            {
+                id: 102,
+                topicId: 1,
+                side: 'con',
+                role: '네이트(아빠)의 시선',
+                author: '배려가먼저',
+                claim: '초등학교 5학년은 외모 지적에 너무 상처받기 쉬운 나이입니다.',
+                reason: '아빠 네이트의 우려처럼 아이들의 정서적 무자비함은 아이에게 되돌릴 수 없는 trauma를 줄 수 있습니다. 조금 더 심리적 단련을 거친 후 중학교 때 진학했어도 늦지 않았습니다.',
+                likes: 3,
+                date: '2026.09.21'
+            },
+            {
+                id: 103,
+                topicId: 2,
+                side: 'pro',
+                role: '잭 윌의 시선',
+                author: '우정바라기',
+                claim: '실수를 진심으로 뉘우치고 행동으로 증명했습니다.',
+                reason: '잭 윌은 어기와의 관계를 지키기 위해 인기 그룹인 줄리안과의 관계도 포기하고 주먹다짐까지 했습니다. 말보다 행동으로 진심을 보여주었기에 용서받을 자격이 있습니다.',
+                likes: 11,
+                date: '2026.09.21'
+            }
+        ];
+
+        // Precepts Data
+        const preceptsData = [
+            { month: '9월 (September)', quote: 'When given the choice between being right or being kind, choose kind.', translate: '옳음과 친절함 중 하나를 선택해야 한다면, 친절함을 선택하라.', author: 'Dr. Wayne W. Dyer' },
+            { month: '10월 (October)', quote: 'Your deeds are your monuments.', translate: '당신의 행동이 바로 당신의 기념비이다.', author: 'inscription on an Egyptian tomb' },
+            { month: '11월 (November)', quote: 'Have no friends not equal to yourself.', translate: '나보다 못한 사람을 친구로 두지 마라. (모두에게서 배울 점을 찾아라)', author: 'Confucius (공자)' },
+            { month: '12월 (December)', quote: 'A Arendt: It is better to suffer wrong than to do wrong.', translate: '불의를 행하는 것보다 불의를 당하는 것이 낫다.', author: 'Socrates (소크라테스)' }
+        ];
+
+        // User Memos Data
+        let userMemos = [
+            { id: 1, author: '김친절 학생', text: '어기의 용기를 보며 남들과 다른 친구를 따뜻하게 먼저 다가가서 맞아주기로 결심했습니다.', color: 'amber', date: '2026.09.21' },
+            { id: 2, author: '지혜로운샘', text: '친절은 타인을 변화시키는 가장 강력한 울림입니다. 힘으로 이기는 것보다 따뜻함으로 보듬읍시다.', color: 'emerald', date: '2026.09.21' }
+        ];
+
+        // State Variables
+        let activeTab = 'characters';
+        let activeDebateTopicId = 1;
+        let activeDebateFeedFilter = 'all';
+
+        // DOM Initialization
+        window.addEventListener('DOMContentLoaded', () => {
+            renderCharacters(charactersData);
+            populateDebateTopicSelect();
+            renderActiveDebateTopic();
+            renderDebatePosts();
+            renderPrecepts();
+            renderMemos();
+            lucide.createIcons();
+        });
+
+        // Tab Switching Logic
+        function switchTab(tabName) {
+            activeTab = tabName;
+            
+            // Sections
+            ['characters', 'debates', 'quiz', 'precepts'].forEach(t => {
+                const el = document.getElementById(`tab-${t}`);
+                if (el) el.classList.toggle('hidden', t !== tabName);
+
+                // Desktop Nav style
+                const navBtn = document.getElementById(`nav-${t}`);
+                if (navBtn) {
+                    if (t === tabName) {
+                        navBtn.className = 'px-3 py-2 rounded-lg bg-slate-800 text-blue-400 font-bold transition flex items-center gap-1.5';
+                    } else {
+                        navBtn.className = 'px-3 py-2 rounded-lg hover:bg-slate-800 transition flex items-center gap-1.5 text-slate-300';
+                    }
+                }
+
+                // Mobile Nav style
+                const mnavBtn = document.getElementById(`mnav-${t}`);
+                if (mnavBtn) {
+                    if (t === tabName) {
+                        mnavBtn.className = 'flex flex-col items-center py-1 px-2 text-blue-400 font-bold';
+                    } else {
+                        mnavBtn.className = 'flex flex-col items-center py-1 px-2 text-slate-400';
+                    }
+                }
+            });
+
+            // Update Hero Banner Context
+            const heroTitle = document.getElementById('hero-title');
+            const heroDesc = document.getElementById('hero-desc');
+
+            if (tabName === 'characters') {
+                heroTitle.textContent = '등장인물 각자의 시선과 입장을 들여다봅니다';
+                heroDesc.textContent = '영화 《원더》 속 인물들은 각자의 상처, 사랑, 두려움, 현실적 계산 속에서 선택을 내립니다. 누군가의 행동을 옳고 그름으로만 판단하기 전에 그들의 주장과 근거, 이유를 살펴보고 함께 토론해 보세요.';
+            } else if (tabName === 'debates') {
+                heroTitle.textContent = '영화 속 딜레마 쟁점 찬반 토론장';
+                heroDesc.textContent = '영화 속 갈등과 결정적 순간을 주제로 찬성/반대 입장을 선택하고, 나의 주장과 근거를 친구들과 자유롭게 논의해 보세요.';
+            } else if (tabName === 'quiz') {
+                heroTitle.textContent = '딜레마 체험: 나의 관점 태도 시뮤레이터';
+                heroDesc.textContent = '영화 속 캐릭터들이 겪었던 진짜 선택의 순간에 직접 답해보고, 나와 공감대가 가장 높은 등장인물을 찾아보세요.';
+            } else if (tabName === 'precepts') {
+                heroTitle.textContent = '브라운 선생님의 월별 격언 & 우리의 다짐';
+                heroDesc.textContent = '스스로 행동의 길잡이가 되는 명언과 격언을 나누고, 우리 학급의 친절한 다짐 메모를 함께 공유합니다.';
+            }
+
+            lucide.createIcons();
+        }
+
+        // Character Filtering & Searching
+        function filterCharacters(category) {
+            // Highlight button
+            const buttons = document.querySelectorAll('.char-filter-btn');
+            buttons.forEach(btn => {
+                btn.className = 'char-filter-btn px-4 py-2 rounded-lg text-sm font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 transition';
+            });
+            event.target.className = 'char-filter-btn px-4 py-2 rounded-lg text-sm font-semibold bg-blue-600 text-white shadow-sm transition';
+
+            if (category === 'all') {
+                renderCharacters(charactersData);
+            } else {
+                const filtered = charactersData.filter(c => c.category === category);
+                renderCharacters(filtered);
+            }
+        }
+
+        function searchCharacters() {
+            const query = document.getElementById('char-search').value.toLowerCase().trim();
+            const filtered = charactersData.filter(c => 
+                c.name.toLowerCase().includes(query) || 
+                c.claim.toLowerCase().includes(query) ||
+                c.quote.toLowerCase().includes(query)
+            );
+            renderCharacters(filtered);
+        }
+
+        function renderCharacters(list) {
+            const grid = document.getElementById('characters-grid');
+            if (!grid) return;
+
+            if (list.length === 0) {
+                grid.innerHTML = `<div class="col-span-2 text-center py-12 text-slate-400">검색 조건에 맞는 인물이 없습니다.</div>`;
+                return;
+            }
+
+            grid.innerHTML = list.map(c => `
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col justify-between hover:shadow-md transition">
+                    <div class="p-5 sm:p-6 space-y-4">
+                        <!-- Top Header -->
+                        <div class="flex items-start justify-between gap-3 border-b border-slate-100 pb-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-2xl shrink-0">
+                                    ${c.avatar}
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-lg text-slate-900 leading-tight">${c.name}</h3>
+                                    <span class="inline-block text-xs font-semibold px-2 py-0.5 rounded ${c.badgeBg} mt-1">${c.role}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Claim (주장) -->
+                        <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200/80">
+                            <span class="text-xs font-bold text-blue-600 uppercase tracking-wider block mb-1">📢 핵심 주장</span>
+                            <p class="text-sm font-bold text-slate-800 leading-snug">${c.claim}</p>
+                        </div>
+
+                        <!-- Evidence & Reasons (근거 및 이유) -->
+                        <div class="space-y-2 text-xs sm:text-sm text-slate-600">
+                            <div>
+                                <strong class="text-slate-800 font-semibold">📌 상황 근거:</strong>
+                                <span>${c.evidence}</span>
+                            </div>
+                            <div>
+                                <strong class="text-slate-800 font-semibold">💡 행동 이유:</strong>
+                                <span>${c.reason}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Famous Quote Footer -->
+                    <div class="bg-indigo-950/5 p-4 border-t border-slate-100 text-xs italic text-indigo-900 font-medium flex items-start gap-2">
+                        <i data-lucide="quote" class="w-4 h-4 text-indigo-500 shrink-0 mt-0.5"></i>
+                        <span>${c.quote}</span>
+                    </div>
+                </div>
+            `).join('');
+
+            lucide.createIcons();
+        }
+
+        // Debate Topic Functions
+        function populateDebateTopicSelect() {
+            const select = document.getElementById('debate-topic-select');
+            if (!select) return;
+
+            select.innerHTML = debateTopics.map(t => `
+                <option value="${t.id}">쟁점 #${t.id}: ${t.title}</option>
+            `).join('');
+        }
+
+        function changeDebateTopic() {
+            const select = document.getElementById('debate-topic-select');
+            activeDebateTopicId = parseInt(select.value);
+            renderActiveDebateTopic();
+            renderDebatePosts();
+        }
+
+        function renderActiveDebateTopic() {
+            const topic = debateTopics.find(t => t.id === activeDebateTopicId);
+            if (!topic) return;
+
+            const card = document.getElementById('active-topic-card');
+            const totalVotes = topic.proVotes + topic.conVotes;
+            const proPercent = totalVotes > 0 ? Math.round((topic.proVotes / totalVotes) * 100) : 0;
+            const conPercent = totalVotes > 0 ? (100 - proPercent) : 0;
+
+            card.innerHTML = `
+                <div class="space-y-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-indigo-800/80 pb-3">
+                        <span class="text-xs font-bold text-amber-400 tracking-wider uppercase">DEBATE TOPIC #${topic.id}</span>
+                        <span class="text-xs text-slate-300 font-semibold">총 학급 참여 학생: <span class="text-amber-300 font-bold text-sm">${totalVotes}명</span></span>
+                    </div>
+
+                    <h3 class="text-xl sm:text-2xl font-bold leading-snug text-white">
+                        ${topic.question}
+                    </h3>
+
+                    <!-- Visual Progress Bar for Votes -->
+                    <div class="space-y-1.5 pt-2">
+                        <div class="flex justify-between text-xs font-bold">
+                            <span class="text-emerald-400">👍 찬성: ${topic.proVotes}명 (${proPercent}%)</span>
+                            <span class="text-rose-400">👎 반대: ${topic.conVotes}명 (${conPercent}%)</span>
+                        </div>
+                        <div class="h-3.5 w-full bg-slate-800 rounded-full overflow-hidden flex p-0.5 border border-white/10">
+                            <div class="bg-gradient-to-r from-emerald-500 to-emerald-400 h-full rounded-l-full transition-all duration-500" style="width: ${proPercent}%"></div>
+                            <div class="bg-gradient-to-r from-rose-500 to-rose-400 h-full rounded-r-full transition-all duration-500" style="width: ${conPercent}%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Topic Perspectives Details -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 text-xs">
+                        <div class="bg-white/5 p-3 rounded-lg border border-white/10">
+                            <span class="font-bold text-emerald-300 block mb-1">👍 찬성 측 요지</span>
+                            <p class="text-slate-300">${topic.proDesc}</p>
+                        </div>
+                        <div class="bg-white/5 p-3 rounded-lg border border-white/10">
+                            <span class="font-bold text-rose-300 block mb-1">👎 반대 측 요지</span>
+                            <p class="text-slate-300">${topic.conDesc}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Handle Debate Opinion Submission
+        function handleDebateSubmit(e) {
+            e.preventDefault();
+
+            const side = document.querySelector('input[name="debate-side"]:checked').value;
+            const role = document.getElementById('debate-author-role').value;
+            const name = document.getElementById('debate-author-name').value.trim();
+            const claim = document.getElementById('debate-claim').value.trim();
+            const reason = document.getElementById('debate-reason').value.trim();
+
+            if (!name || !claim || !reason) return;
+
+            // Increment topic vote
+            const topic = debateTopics.find(t => t.id === activeDebateTopicId);
+            if (topic) {
+                if (side === 'pro') topic.proVotes++;
+                else topic.conVotes++;
+            }
+
+            // Create new post
+            const newPost = {
+                id: Date.now(),
+                topicId: activeDebateTopicId,
+                side: side,
+                role: role,
+                author: name,
+                claim: claim,
+                reason: reason,
+                likes: 0,
+                date: new Date().toISOString().split('T')[0].replace(/-/g, '.')
+            };
+
+            debatePosts.unshift(newPost);
+
+            // Reset Form & Re-render
+            document.getElementById('debate-form').reset();
+            renderActiveDebateTopic();
+            renderDebatePosts();
+
+            // Scroll feed to top
+            document.getElementById('debate-posts-list').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function filterDebateFeed(side) {
+            activeDebateFeedFilter = side;
+
+            ['all', 'pro', 'con'].forEach(s => {
+                const btn = document.getElementById(`ffilter-${s}`);
+                if (!btn) return;
+                if (s === side) {
+                    btn.className = s === 'pro' ? 'px-3 py-1.5 rounded-md font-bold bg-emerald-600 text-white' :
+                                    s === 'con' ? 'px-3 py-1.5 rounded-md font-bold bg-rose-600 text-white' :
+                                    'px-3 py-1.5 rounded-md font-bold bg-slate-800 text-white';
+                } else {
+                    btn.className = s === 'pro' ? 'px-3 py-1.5 rounded-md text-emerald-700 bg-emerald-50 hover:bg-emerald-100 font-semibold' :
+                                    s === 'con' ? 'px-3 py-1.5 rounded-md text-rose-700 bg-rose-50 hover:bg-rose-100 font-semibold' :
+                                    'px-3 py-1.5 rounded-md text-slate-600 bg-slate-100 hover:bg-slate-200 font-semibold';
+                }
+            });
+
+            renderDebatePosts();
+        }
+
+        function renderDebatePosts() {
+            const listContainer = document.getElementById('debate-posts-list');
+            const feedCount = document.getElementById('feed-count');
+            const statPosts = document.getElementById('stat-posts');
+
+            if (!listContainer) return;
+
+            let topicPosts = debatePosts.filter(p => p.topicId === activeDebateTopicId);
+
+            if (activeDebateFeedFilter !== 'all') {
+                topicPosts = topicPosts.filter(p => p.side === activeDebateFeedFilter);
+            }
+
+            if (feedCount) feedCount.textContent = topicPosts.length;
+            if (statPosts) statPosts.textContent = `${debatePosts.length}개`;
+
+            if (topicPosts.length === 0) {
+                listContainer.innerHTML = `
+                    <div class="bg-white p-8 rounded-xl border border-slate-200 text-center text-slate-400 text-sm">
+                        아직 등록된 토론 의견이 없습니다. 첫 번째 의견을 작성해 보세요!
+                    </div>
+                `;
+                return;
+            }
+
+            listContainer.innerHTML = topicPosts.map(p => {
+                const isPro = p.side === 'pro';
+                return `
+                    <div class="bg-white rounded-xl p-5 shadow-sm border ${isPro ? 'border-emerald-200 hover:border-emerald-300' : 'border-rose-200 hover:border-rose-300'} transition space-y-3">
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="px-2.5 py-1 rounded-full font-bold ${isPro ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+                                ${isPro ? '👍 찬성 (동의)' : '👎 반대 (비동의)'}
+                            </span>
+                            <div class="text-slate-400 space-x-2">
+                                <span>참고 시선: <strong class="text-slate-600">${p.role}</strong></span>
+                                <span>•</span>
+                                <span>${p.date}</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h4 class="font-bold text-slate-900 text-base leading-snug mb-1">"${p.claim}"</h4>
+                            <p class="text-slate-600 text-xs sm:text-sm leading-relaxed">${p.reason}</p>
+                        </div>
+
+                        <div class="flex justify-between items-center border-t border-slate-100 pt-3 text-xs">
+                            <span class="font-bold text-slate-700">작성자: ${p.author}</span>
+                            <button onclick="toggleLikePost(${p.id})" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-md font-semibold transition flex items-center gap-1">
+                                ❤️ 공감 <span class="text-blue-600 font-bold">${p.likes}</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            lucide.createIcons();
+        }
+
+        function toggleLikePost(postId) {
+            const post = debatePosts.find(p => p.id === postId);
+            if (post) {
+                post.likes++;
+                renderDebatePosts();
+            }
+        }
+
+        // Quiz System Data & Logic
+        const quizQuestions = [
+            {
+                q: "집단 내에서 타인과 확연히 다른 특성을 가진 새로운 구성원이 들어왔을 때, 당신의 첫 반응은?",
+                cat: "사회적 수용성",
+                options: [
+                    { text: "상처받지 않도록 묵묵히 보듬어주고 안전한 울타리가 되어주고 싶다.", char: "isabel" },
+                    { text: "처음엔 어색하지만, 대화를 나누며 공통점과 재치 있는 모습을 발견해 친구가 된다.", char: "jackwill" },
+                    { text: "새로운 낯선 시선에 노출되어 상처받을까 봐 차라리 보호구역 안에 두는 게 맞다 본다.", char: "nate" },
+                    { text: "누구든 외모와 조건에 상관없이 공평한 배움의 기회를 누려야 한다고 주장한다.", char: "browne" }
+                ]
+            },
+            {
+                q: "친구 무리에서 한 아이를 따돌리려는 분위기나 농담이 형성될 때 당신의 태도는?",
+                cat: "집단 동조 vs 신념",
+                options: [
+                    { text: "어색함을 피하려 얼떨결에 휩쓸렸다가도, 이내 괴로움을 느끼고 진심으로 사과한다.", char: "jackwill" },
+                    { text: "그런 분위기를 주도하는 불의를 참지 않고 부딪쳐서라도 옳음을 지킨다.", char: "tushman" },
+                    { text: "내 입지가 좁아질까 봐 주위 친구들의 분위기에 그대로 맞춰 행동한다.", char: "julian" },
+                    { text: "상처받은 아이의 마음을 조용히 지켜보며 따뜻한 대화를 건넨다.", char: "via" }
+                ]
+            },
+            {
+                q: "가족 중 한 사람에게 모든 관심과 보살핌이 집중되어 내가 소외감을 느낄 때 당신은?",
+                cat: "희생과 이해",
+                options: [
+                    { text: "섭섭하고 외롭지만, 상황을 이해하기에 묵묵히 내 할 일을 해내며 참아낸다.", char: "via" },
+                    { text: "나도 힘들다는 것을 분명하게 표현하고 부모님의 관심과 솔직한 대화를 요구한다.", char: "auggie" },
+                    { text: "가족의 희생이 당연하다고 생각하며 더 큰 사랑으로 헌신한다.", char: "isabel" },
+                    { text: "가족 모두가 상처받지 않도록 분위기를 띄우며 밝은 유머로 감싸 안는다.", char: "nate" }
+                ]
+            },
+            {
+                q: "타인에게 상처를 주는 사람에게 경고하거나 규칙을 적용해야 할 때 당신의 기준은?",
+                cat: "원칙 vs 용서",
+                options: [
+                    { text: "외모나 배경을 바꿀 수는 없다. 타인을 대하는 우리의 시선과 태도를 엄격히 바꿔야 한다.", char: "tushman" },
+                    { text: "지식이나 옳음보다 '친절함'을 선택하는 도덕적 가치를 스스로 깨닫게 유도한다.", char: "browne" },
+                    { text: "상대가 자기 잘못을 인정하고 사과할 때까지 단호하게 맞선다.", char: "auggie" },
+                    { text: "실수나 허물보다는 상대의 처지와 사정을 감안하여 기회를 준다.", char: "jackwill" }
+                ]
+            },
+            {
+                q: "세상의 편견이나 시선에 직면했을 때 당신이 지니고 싶은 가장 큰 무기는?",
+                cat: "자기 수용",
+                options: [
+                    { text: "우주선 헬멧을 벗고 내 모습 그대로를 당당히 보여주는 자존감과 위트.", char: "auggie" },
+                    { text: "어떠한 거친 환경에서도 자식을 지켜내는 끊임없는 사랑과 굳은 의지.", char: "isabel" },
+                    { text: "타인을 편견 없이 바라보고 따뜻하게 다가갈 수 있는 친절의 마음.", char: "browne" },
+                    { text: "묵묵히 자기 자리를 지키며 주변을 온화하게 밝히는 든든한 연대감.", char: "via" }
+                ]
+            }
+        ];
+
+        let currentQuizStep = 0;
+        let quizScores = {};
+
+        function startQuiz() {
+            currentQuizStep = 0;
+            quizScores = { auggie: 0, isabel: 0, nate: 0, via: 0, jackwill: 0, tushman: 0, browne: 0, julian: 0 };
+
+            document.getElementById('quiz-intro').classList.add('hidden');
+            document.getElementById('quiz-result-box').classList.add('hidden');
+            document.getElementById('quiz-question-box').classList.remove('hidden');
+
+            renderQuizQuestion();
+        }
+
+        function renderQuizQuestion() {
+            const qData = quizQuestions[currentQuizStep];
+            document.getElementById('quiz-step-num').textContent = currentQuizStep + 1;
+            document.getElementById('quiz-category-tag').textContent = qData.cat;
+            document.getElementById('quiz-question-text').textContent = qData.q;
+
+            const optionsList = document.getElementById('quiz-options-list');
+            optionsList.innerHTML = qData.options.map((opt, idx) => `
+                <button onclick="selectQuizOption('${opt.char}')" class="w-full text-left p-4 rounded-xl border border-slate-200 hover:border-blue-500 hover:bg-blue-50/50 transition font-medium text-xs sm:text-sm text-slate-800 flex items-center gap-3">
+                    <span class="w-6 h-6 rounded-full bg-slate-100 text-slate-600 font-bold text-xs flex items-center justify-center shrink-0 border border-slate-200">${idx + 1}</span>
+                    <span>${opt.text}</span>
+                </button>
+            `).join('');
+        }
+
+        function selectQuizOption(charKey) {
+            quizScores[charKey] = (quizScores[charKey] || 0) + 1;
+            currentQuizStep++;
+
+            if (currentQuizStep < quizQuestions.length) {
+                renderQuizQuestion();
+            } else {
+                showQuizResult();
+            }
+        }
+
+        function showQuizResult() {
+            document.getElementById('quiz-question-box').classList.add('hidden');
+            const resultBox = document.getElementById('quiz-result-box');
+            resultBox.classList.remove('hidden');
+
+            // Find top matched character
+            let topChar = 'browne';
+            let maxScore = -1;
+            for (let c in quizScores) {
+                if (quizScores[c] > maxScore) {
+                    maxScore = quizScores[c];
+                    topChar = c;
+                }
+            }
+
+            const charInfoMap = {
+                auggie: { name: '용기 있는 개척자, 어기 (Auggie)', emoji: '🚀', desc: '당신은 상처와 두려움 앞에서도 헬멧을 벗고 세상으로 한 걸음 나아가는 용기를 지닌 사람입니다. 재치와 자존감으로 시련을 극복합니다.' },
+                isabel: { name: '헌신적이고 강인한 리더, 이사벨 (엄마)', emoji: '👩‍🎨', desc: '당신은 사랑하는 이를 지키기 위해 때로는 엄격하고 때로는 무한한 헌신을 발휘하는 강인한 성품의 소유자입니다.' },
+                via: { name: '깊은 이해심의 성숙한 조력자, 비아 (누나)', emoji: '⭐', desc: '당신은 타인의 아픔을 이해하기에 스스로의 외로움을 감내할 줄 아는 성숙하고 책임감 있는 따뜻한 마음을 가지고 있습니다.' },
+                jackwill: { name: '진실한 우정을 선택하는 잭 윌 (Jack Will)', emoji: '👦', desc: '당신은 집단의 시선이나 편견보다 사람의 진가를 알아볼 줄 알며, 실수하더라도 진심으로 사과하고 다가가는 용기를 가졌습니다.' },
+                browne: { name: '친절의 가치를 전하는 브라운 선생님', emoji: '📖', desc: '당신은 "옳음보다 친절함"을 우선시하며, 따뜻한 선의와 도덕적 가치로 주위 사람들에게 선한 영향력을 미칩니다.' },
+                tushman: { name: '원칙과 포용을 실천하는 투쉬만 교장', emoji: '🎓', desc: '당신은 외압에 흔들리지 않고 모두에게 공평한 기회와 다양성의 가치를 수호하는 공의로운 관점을 지녔습니다.' }
+            };
+
+            const matched = charInfoMap[topChar] || charInfoMap['browne'];
+
+            document.getElementById('quiz-result-emoji').textContent = matched.emoji;
+            document.getElementById('quiz-result-name').textContent = matched.name;
+            document.getElementById('quiz-result-desc').textContent = matched.desc;
+
+            lucide.createIcons();
+        }
+
+        // Precepts & Memo Wall Rendering
+        function renderPrecepts() {
+            const grid = document.getElementById('precepts-grid');
+            if (!grid) return;
+
+            grid.innerHTML = preceptsData.map(p => `
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-2">
+                    <span class="text-xs font-bold text-amber-600 uppercase tracking-wider block">${p.month}</span>
+                    <blockquote class="font-bold text-slate-900 text-sm sm:text-base leading-snug">
+                        "${p.quote}"
+                    </blockquote>
+                    <p class="text-xs sm:text-sm text-slate-600 leading-relaxed font-medium">👉 ${p.translate}</p>
+                    <span class="block text-right text-xs text-slate-400 font-serif">— ${p.author}</span>
+                </div>
+            `).join('');
+        }
+
+        function renderMemos() {
+            const grid = document.getElementById('memos-grid');
+            if (!grid) return;
+
+            grid.innerHTML = userMemos.map(m => {
+                const colorBg = m.color === 'emerald' ? 'bg-emerald-50 border-emerald-200 text-emerald-950' :
+                                m.color === 'blue' ? 'bg-blue-50 border-blue-200 text-blue-950' :
+                                'bg-amber-50 border-amber-200 text-amber-950';
+
+                return `
+                    <div class="${colorBg} p-4 rounded-xl border shadow-sm space-y-3 flex flex-col justify-between">
+                        <p class="text-xs sm:text-sm font-semibold leading-relaxed">"${m.text}"</p>
+                        <div class="flex justify-between items-center text-xs opacity-75 border-t border-current/10 pt-2">
+                            <span class="font-bold">- ${m.author}</span>
+                            <span>${m.date}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function openMemoModal() {
+            document.getElementById('memo-modal').classList.remove('hidden');
+        }
+
+        function closeMemoModal() {
+            document.getElementById('memo-modal').classList.add('hidden');
+        }
+
+        function handleMemoSubmit(e) {
+            e.preventDefault();
+            const author = document.getElementById('memo-author').value.trim();
+            const text = document.getElementById('memo-text').value.trim();
+            const color = document.querySelector('input[name="memo-color"]:checked').value;
+
+            if (!author || !text) return;
+
+            userMemos.unshift({
+                id: Date.now(),
+                author: author,
+                text: text,
+                color: color,
+                date: new Date().toISOString().split('T')[0].replace(/-/g, '.')
+            });
+
+            renderMemos();
+            closeMemoModal();
+            document.getElementById('memo-author').value = '';
+            document.getElementById('memo-text').value = '';
+        }
+
+        // QR Code Modal Controls
+        function updateQrCode() {
+            const urlInput = document.getElementById('classroom-url-input');
+            let targetUrl = urlInput ? urlInput.value.trim() : '';
+            
+            if (!targetUrl) {
+                targetUrl = window.location.href;
+            }
+
+            // Save custom URL locally for persistence
+            if (targetUrl && !targetUrl.includes('wonder-debate-class.app')) {
+                try {
+                    localStorage.setItem('wonder_custom_classroom_url', targetUrl);
+                } catch(e) {}
+            }
+
+            const qrImage = document.getElementById('qr-image');
+            if (qrImage) {
+                qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(targetUrl)}`;
+            }
+        }
+
+        function handleQrError(imgElement) {
+            const urlInput = document.getElementById('classroom-url-input');
+            const targetUrl = urlInput ? urlInput.value.trim() : window.location.href;
+            // Fallback QR service if main API fails
+            imgElement.onerror = null;
+            imgElement.src = `https://quickchart.io/qr?text=${encodeURIComponent(targetUrl)}&size=200&margin=1`;
+        }
+
+        function openQrModal() {
+            let currentUrl = window.location.href;
+            const savedUrl = localStorage.getItem('wonder_custom_classroom_url');
+
+            if (savedUrl) {
+                currentUrl = savedUrl;
+            } else if (currentUrl.startsWith('about:') || currentUrl.startsWith('file:') || currentUrl.includes('srcdoc') || currentUrl.includes('localhost')) {
+                currentUrl = 'https://wonder-debate-class.app';
+            }
+            
+            const urlInput = document.getElementById('classroom-url-input');
+            if (urlInput) {
+                urlInput.value = currentUrl;
+            }
+
+            updateQrCode();
+            document.getElementById('qr-modal').classList.remove('hidden');
+        }
+
+        function closeQrModal() {
+            document.getElementById('qr-modal').classList.add('hidden');
+        }
+
+        function copyClassroomUrl() {
+            const urlInput = document.getElementById('classroom-url-input');
+            if (!urlInput) return;
+            urlInput.select();
+            document.execCommand('copy');
+            
+            const btn = event.currentTarget;
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = `<i data-lucide="check" class="w-3.5 h-3.5"></i> 복사 완료!`;
+            lucide.createIcons();
+            setTimeout(() => {
+                btn.innerHTML = originalHtml;
+                lucide.createIcons();
+            }, 2000);
+        }
+
+        // Teacher Direct Vote Controls
+        function openTeacherVoteModal() {
+            const topic = debateTopics.find(t => t.id === activeDebateTopicId);
+            if (!topic) return;
+
+            document.getElementById('teacher-modal-topic-title').value = `쟁점 #${topic.id}: ${topic.title}`;
+            document.getElementById('teacher-pro-votes').value = topic.proVotes;
+            document.getElementById('teacher-con-votes').value = topic.conVotes;
+
+            document.getElementById('teacher-vote-modal').classList.remove('hidden');
+        }
+
+        function closeTeacherVoteModal() {
+            document.getElementById('teacher-vote-modal').classList.add('hidden');
+        }
+
+        function saveTeacherVotes() {
+            const topic = debateTopics.find(t => t.id === activeDebateTopicId);
+            if (!topic) return;
+
+            const pro = parseInt(document.getElementById('teacher-pro-votes').value) || 0;
+            const con = parseInt(document.getElementById('teacher-con-votes').value) || 0;
+
+            topic.proVotes = pro;
+            topic.conVotes = con;
+
+            renderActiveDebateTopic();
+            closeTeacherVoteModal();
+        }
+    </script>
+</body>
+</html>
